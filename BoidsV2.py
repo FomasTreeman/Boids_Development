@@ -1,0 +1,72 @@
+from AppSetup import *
+from AgentLib import *
+import random
+
+
+class Model:
+    def __init__(self):
+        self.max_length = 100
+        self.cohesion = Vector2D(0, 0)
+        self.separation = Vector2D(0, 0)
+        self.alignment = Vector2D(0, 0)
+        self.agents = [AgentLib(random.randint(10, 990), random.randint(10, 590)) for i in range(50)]
+
+    def setup(self, window: tk.Canvas):
+
+        for agent in self.agents:
+            agent.velocity = Vector2D(random.randint(-50, 50), random.randint(-100, 100))
+
+            agent.setup(window)
+
+        # distance = agent.position - self.position
+        #     if distance.mag() <= 100:
+        #         self.sum_velocity += agent.velocity
+        #         agent.apply_force(0.1)
+
+    def draw(self, window: tk.Canvas):
+        sum_position = Vector2D(0, 0)
+        mean_position = Vector2D(0, 0)
+        sum_velocity = Vector2D(0, 0)
+
+        # draw whos near me
+        count = 0
+        for agent in self.agents:
+            for other_agent in self.agents:
+                distance = agent.position - other_agent.position
+                sum_velocity += agent.velocity
+            if distance.mag() <= 100:
+                sum_position += other_agent.position
+                count += 1
+            if count == 0:
+                mean_position = agent.position
+            else:
+                mean_position = sum_position / count
+                self.alignment = sum_velocity / count
+            # separation
+            self.cohesion = mean_position - agent.position
+            self.separation = self.cohesion
+            self.separation *= - 1
+            mag = self.separation.mag()
+            self.separation = self.separation.norm() * (self.max_length - mag)
+            sum_velocity = self.alignment + self.separation + self.cohesion
+
+            agent.apply_force(sum_velocity)
+            agent.update()
+            agent.edges(window)
+
+        # window.coords(self.separation, self.position.x, self.position.y, self.position.x + velocity.x,
+        #               self.position.y + velocity.y)
+        #
+        # velocity = self.sum_velocity / count
+        #
+        # window.coords(self.alignment, self.position.x, self.me.position.y,
+        #               self.position.x + velocity.x, self.me.position.y + velocity.y)
+        #
+        # mean_pos_dist = mean_position - self.position
+        # window.coords(self.cohesion, self.position.x, self.position.y, self.position.x + mean_pos_dist.x,
+        #               self.position.y + mean_pos_dist.y)
+
+
+model = Model()
+app = App("Boids attempt 1", model)
+app.mainloop()
