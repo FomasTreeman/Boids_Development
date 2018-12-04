@@ -18,7 +18,7 @@ class AgentLib:
         self.acceleration *= 0
 
     def apply_force(self, force):
-        self.acceleration += force * 0.1
+        self.acceleration += force
 
     def attract(self, other):
         # direction
@@ -41,13 +41,16 @@ class AgentLib:
         return force
 
     def setup(self, window: tk.Canvas):
-        window.create_line(self.position.x, self.position.y,
+        self.c = window.create_line(self.position.x, self.position.y,
                            self.position.x + self.velocity.x,
                            self.position.y + self.velocity.y, arrow=tk.LAST)
         #self.c = window.create_tex(self.position.x, self.position.y, text="X", anchor=tk.CENTER)
 
     def display(self, window: tk.Canvas, fill="black"):
-        window.coords(self.c, self.position.x, self.position.y)
+        window.coords(self.c, self.position.x, self.position.y,
+                      self.position.x + self.velocity.x,
+                      self.position.y + self.velocity.y
+                      )
         window.itemconfig(self.c, fill=fill)
 
     def edges(self, window: tk.Canvas):

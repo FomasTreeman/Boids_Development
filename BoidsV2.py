@@ -9,10 +9,10 @@ class Model:
         self.cohesion = Vector2D(0, 0)
         self.separation = Vector2D(0, 0)
         self.alignment = Vector2D(0, 0)
-        self.agents = [AgentLib(random.randint(10, 990), random.randint(10, 590)) for i in range(50)]
+        # self.agents = [AgentLib(random.randint(10, 990), random.randint(10, 590)) for i in range(50)]
+        self.agents = [AgentLib(random.randint(400, 500), random.randint(300, 400)) for i in range(50)]
 
     def setup(self, window: tk.Canvas):
-
         for agent in self.agents:
             agent.velocity = Vector2D(random.randint(-50, 50), random.randint(-100, 100))
 
@@ -29,30 +29,51 @@ class Model:
         sum_velocity = Vector2D(0, 0)
 
         # draw whos near me
-        count = 0
         for agent in self.agents:
+            count = 0
             for other_agent in self.agents:
-                distance = agent.position - other_agent.position
-                sum_velocity += agent.velocity
-            if distance.mag() <= 100:
-                sum_position += other_agent.position
                 count += 1
-            if count == 0:
-                mean_position = agent.position
-            else:
-                mean_position = sum_position / count
-                self.alignment = sum_velocity / count
-            # separation
-            self.cohesion = mean_position - agent.position
-            self.separation = self.cohesion
-            self.separation *= - 1
-            mag = self.separation.mag()
-            self.separation = self.separation.norm() * (self.max_length - mag)
-            sum_velocity = self.alignment + self.separation + self.cohesion
+                # distance = agent.position - other_agent.position
+                # sum_velocity += agent.velocity
+                # if distance.mag() <= 100:
+                #     sum_position += other_agent.position
+                #     count += 1
+                # if count == 0:
+                #     mean_position = agent.position
+                # else:
+                #     mean_position = sum_position / count
+                #     self.alignment = sum_velocity / count
+                # # separation
+                # self.cohesion = mean_position - agent.position
+                # self.separation = self.cohesion
+                # self.separation *= - 1
+                # mag = self.separation.mag()
+                # self.separation = self.separation.norm() * (self.max_length - mag)
+                # sum_velocity = self.alignment + self.separation + self.cohesion
 
-            agent.apply_force(sum_velocity)
+# separation
+
+                distance = agent.position - other_agent.position
+                if distance.mag() <= 100:
+                    distance *= -1
+                    other_agent.apply_force(distance)
+
+# cohesion
+#                 sum_position += other_agent.position
+
+
+# alignment
+
+                # sum_velocity += other_agent.velocity
+
+            # sum_velocity /= count
+            sum_position /= count
+
+
+            # agent.apply_force(sum_velocity)
             agent.update()
             agent.edges(window)
+            agent.display(window)
 
         # window.coords(self.separation, self.position.x, self.position.y, self.position.x + velocity.x,
         #               self.position.y + velocity.y)
